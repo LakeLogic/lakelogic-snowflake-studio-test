@@ -150,6 +150,20 @@ def _stage_to_local(conn, path):
     return os.path.join(local, tail).replace("\\", "/")
 
 
+def _stamp_load_time(df):
+    """Every written row carries the engine's load time (`_lakelogic_processed_at`), as the Spark
+    write path stamps it on Databricks and Fabric. Silver deduplicates on it (latest wins), so a
+    bronze table without it fails silver (live run 2026-10-18: invalid identifier
+    '_LAKELOGIC_PROCESSED_AT'). An existing value is kept: it is the original load time."""
+    from lakelogic.core.constants import META_PROCESSED_AT
+
+    if df is None or not len(df):
+        return df
+    if META_PROCESSED_AT.upper() not in {str(c).upper() for c in df.columns}:
+        df[META_PROCESSED_AT] = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S")
+    return df
+
+
 def _topo(contracts):
     """Order contracts within a layer by intra-layer depends_on (entity names)."""
     by_entity = {c.entity: c for c in contracts}
@@ -216,6 +230,7 @@ def run_layer(conn, database, sys_yaml, layer, log=print, environment="dev"):
                 bad = None if bad is None else bad.to_pandas()
             good = _coerce_datetimes(good, cd)
             good = _apply_scd2_first_load(good, cd)
+            good = _stamp_load_time(good)
             ng = 0 if good is None else len(good)
             nb = 0 if bad is None else len(bad)
             if ng:
