@@ -7,7 +7,7 @@
         "compute": "LAKELOGIC_WH",
         "compute_pool": "LLDEMO_POOL",
         "container": "LLDEMO_DEV",
-        "engine_version": "1.79.5",
+        "engine_version": "1.79.6",
         "engine_wheel": null,
         "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
         "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
@@ -23,12 +23,12 @@
     ]
   },
   "design_snapshot_id": "snap-429b586fd4c04d3d",
-  "engine_version": "1.79.5",
+  "engine_version": "1.79.6",
   "kind": "lakelogic-project-download",
   "platform": "snowflake",
   "project_file_count": 137,
   "project_name": "RideFlow \u2014 Trip & Revenue Analytics (copy)",
-  "rendered_at": "2026-10-18T12:16:19Z",
+  "rendered_at": "2026-10-18T13:15:32Z",
   "revision_hash": "chv1:a5264ea0ab53dafe06f0059818462cccb7f8c7f4df07d6b7e974488159c5b1df",
   "saas_version": "0.1.0",
   "statement": "downloaded \u2014 not delivered; not tracked as a delivery"

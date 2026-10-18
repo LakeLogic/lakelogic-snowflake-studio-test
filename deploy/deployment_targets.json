@@ -6,7 +6,7 @@
       "compute": "LAKELOGIC_WH",
       "compute_pool": "LLDEMO_POOL",
       "container": "LLDEMO_DEV",
-      "engine_version": "1.79.5",
+      "engine_version": "1.79.6",
       "engine_wheel": null,
       "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
       "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
