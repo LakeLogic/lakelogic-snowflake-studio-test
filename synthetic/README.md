@@ -2,7 +2,7 @@
 
 Source: medallion design bp:snap-429b586fd4c04d3d r1
 Generated at: revision:chv1:a5264ea0ab53dafe06f0059818462cccb7f8c7f4df07d6b7e974488159c5b1df seal:sha256:4eb207b04b65320c4d32ffba41eac7bae8a56f63d105b18e6df1f2a3b308db9c
-Generator: lakelogic DataGenerator v1.79.4
+Generator: lakelogic DataGenerator v1.79.5
 
 ## Fidelity profile: contract-derived
 
