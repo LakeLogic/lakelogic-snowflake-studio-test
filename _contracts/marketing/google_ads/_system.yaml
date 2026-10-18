@@ -60,6 +60,7 @@ environments:
     domain_catalog_prefix: LLDEMO_DEV
     landing_path: '@LLDEMO_DEV_{domain}.FILES.LANDING/{system}'
     log_path: '@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS'
+    catalog: LLDEMO_DEV
 
 contracts:
 - layer: bronze

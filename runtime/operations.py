@@ -9,7 +9,7 @@ The Snowflake form of the jobs every LakeLogic project ships (``platform_project
   OPTIMIZE/VACUUM to run; this job reports each table's rows and bytes so the step exists
   and says what it measured.
 
-Each is run by ``notebooks/operations.ipynb`` (``NB_OPERATIONS``) from a task in
+Each is run by its own notebook (``notebooks/nb_slo_checks.ipynb``, ``nb_compliance_erasure``, ...) from a task in
 ``tasks/<group>/``. Nothing here reads credentials; it runs on the notebook's session.
 """
 from __future__ import annotations

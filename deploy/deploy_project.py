@@ -176,7 +176,8 @@ def main():
     # PIPELINE.WHEELS.
     eai = os.getenv("SNOWFLAKE_PYPI_INTEGRATION", "").strip()
     if eai:
-        for nb in ("NB_PIPELINE", "NB_SYNTHETIC_SEED", "NB_OPERATIONS"):
+        for nb in ("NB_00_SETUP", "NB_PIPELINE_DRIVER", "NB_TEST_DATA_DRIVER", "NB_SLO_CHECKS",
+                   "NB_COMPLIANCE_ERASURE", "NB_COMPLIANCE_RETENTION_CHECK", "NB_MAINTENANCE_OPTIMIZE"):
             run(cur, f"ALTER NOTEBOOK {db}.PIPELINE.{nb} SET EXTERNAL_ACCESS_INTEGRATIONS = ({eai})")
     else:
         print("  note: no SNOWFLAKE_PYPI_INTEGRATION set, so task runs install LakeLogic from "
