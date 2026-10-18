@@ -58,7 +58,7 @@ environments:
   dev:
     project_root: LLDEMO_REPO
     domain_catalog_prefix: LLDEMO_DEV
-    landing_path: '@LLDEMO_DEV_{domain}.LANDING.FILES/{system}'
+    landing_path: '@LLDEMO_DEV_{domain}.FILES.LANDING/{system}'
     log_path: '@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS'
 
 contracts:

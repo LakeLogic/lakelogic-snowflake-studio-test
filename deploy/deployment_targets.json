@@ -8,7 +8,7 @@
       "container": "LLDEMO_DEV",
       "engine_version": "1.79.4",
       "engine_wheel": null,
-      "landing_root": "@LLDEMO_DEV_{domain}.LANDING.FILES/{system}",
+      "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
       "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
       "project_root": "LLDEMO_REPO",
       "secret_name": null,
