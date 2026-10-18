@@ -164,6 +164,26 @@ def _stamp_load_time(df):
     return df
 
 
+def _log_run(proc, error, log=print):
+    """One run-log row per contract, as LakeLogic's pipeline runner writes on Databricks and
+    Fabric: this runtime calls the processor directly, so without it the domain's
+    LAKELOGIC._lakelogic_run_log stayed empty (live run 2026-10-18). Core's own writer, so the
+    row has the same columns everywhere. A log that cannot be written never fails the run."""
+    report = getattr(proc, "last_report", None) if proc is not None else None
+    if not report:
+        return
+    try:
+        from lakelogic.core.run_log import capture_failure, write_run_log
+
+        if error is not None:
+            report["status"] = "failed"
+            report.update(capture_failure(error))
+        write_run_log(report, proc.contract, engine_name=proc.engine_name,
+                      run_log_mode=getattr(proc, "_run_log_mode", None))
+    except Exception as exc:  # noqa: BLE001 - logging must not fail the pipeline
+        log(f"    (run log not written: {str(exc)[:160]})")
+
+
 def _topo(contracts):
     """Order contracts within a layer by intra-layer depends_on (entity names)."""
     by_entity = {c.entity: c for c in contracts}
@@ -217,6 +237,7 @@ def run_layer(conn, database, sys_yaml, layer, log=print, environment="dev"):
 
             fields = (cd.get("model") or {}).get("fields") or []
             source_ref = _pd.DataFrame(columns=[f["name"] for f in fields])
+        proc = None
         try:
             fmt = str(src.get("format") or "").lower()
             if isinstance(source_ref, str) and source_ref.startswith("@"):
@@ -224,7 +245,8 @@ def run_layer(conn, database, sys_yaml, layer, log=print, environment="dev"):
                     source_ref, engine = _stage_to_local(conn, source_ref), "polars"
                 else:
                     source_ref = _stage_to_table(conn, source_ref, fmt, rc.entity)
-            good, bad = DataProcessor(cd, engine=engine).run(source_ref)
+            proc = DataProcessor(cd, engine=engine)
+            good, bad = proc.run(source_ref)
             if engine == "polars":
                 good = None if good is None else good.to_pandas()
                 bad = None if bad is None else bad.to_pandas()
@@ -246,7 +268,9 @@ def run_layer(conn, database, sys_yaml, layer, log=print, environment="dev"):
                              quote_identifiers=False)
             log(f"    {rc.entity:<42} {layer:<7} good={ng:<6} quarantined={nb}")
             results.append((rc.entity, "ok", ng, nb))
+            _log_run(proc, None, log)
         except Exception as e:
             log(f"    {rc.entity:<42} {layer:<7} FAILED: {str(e)[:180]}")
             results.append((rc.entity, f"failed: {str(e)[:180]}", 0, 0))
+            _log_run(proc, e, log)
     return results
