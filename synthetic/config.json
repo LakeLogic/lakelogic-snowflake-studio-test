@@ -1,7 +1,7 @@
 {
   "fidelity_profile": "contract-derived",
   "generator": "lakelogic",
-  "generator_version": "1.79.6",
+  "generator_version": "1.79.7",
   "invalid_ratio": 0.0,
   "is_synthetic": true,
   "no_production_rows_read": true,
