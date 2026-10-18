@@ -1,0 +1,74 @@
+version: 1.0.0
+
+info:
+  title: Gold — Fact Sessions
+  target_layer: gold
+  description: 'grain: one row per app session'
+  table_name: '{gold_layer}_fact_sessions'
+  system: google_analytics
+  domain: marketing
+
+model:
+  fields:
+  - name: session_id
+    type: string
+    required: true
+    description: Grain key of the 'sessions' fact.
+  - name: avg_session_duration_seconds
+    type: float
+    required: false
+    description: Column 'avg_session_duration_seconds' of the 'sessions' fact.
+  - name: session_start
+    type: string
+    required: false
+    description: Column 'session_start' of the 'sessions' fact.
+  - name: traffic_campaign
+    type: string
+    required: false
+    description: Column 'traffic_campaign' of the 'sessions' fact.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_fact_sessions
+
+primary_key:
+- session_id
+
+quality:
+  dataset_rules:
+  - unique:
+      columns:
+      - session_id
+      name: session_id_unique
+      category: uniqueness
+      description: No two rows share the same session_id.
+
+transformations:
+- phase: pre
+  sql: |-
+    SELECT
+      r.session_id,
+      r.session_start,
+      r.traffic_campaign,
+      r.session_duration_seconds AS avg_session_duration_seconds
+    FROM source r
+- phase: pre
+  derive:
+    field: system
+    sql: '''google_analytics'''
+
+materialization:
+  strategy: append
+  fact:
+    type: transaction
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_google_analytics_sessions
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

@@ -1,0 +1,151 @@
+version: 1.0.0
+
+info:
+  title: Silver — Rideflow Driver Telemetry
+  target_layer: silver
+  table_name: '{silver_layer}_rideflow_driver_telemetry'
+  system: rideflow
+  domain: marketplace
+
+model:
+  fields:
+  - name: telemetry_id
+    type: string
+    required: true
+    description: Business key 'telemetry_id' (from source table 'driver_telemetry'),
+      typed as string.
+  - name: driver_id
+    type: string
+    required: true
+    description: Column 'driver_id' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: gps_lat
+    type: float
+    required: false
+    pii: true
+    classification: gps_coordinate
+    description: Column 'gps_lat' projected from source table 'driver_telemetry',
+      typed as float. Personal data (gps_coordinate), real values here, masked at
+      gold (redact).
+    min: -90.0
+    max: 90.0
+  - name: gps_lng
+    type: float
+    required: false
+    pii: true
+    classification: gps_coordinate
+    description: Column 'gps_lng' projected from source table 'driver_telemetry',
+      typed as float. Personal data (gps_coordinate), real values here, masked at
+      gold (redact).
+    min: -180.0
+    max: 180.0
+  - name: speed_kmh
+    type: float
+    required: false
+    description: Column 'speed_kmh' projected from source table 'driver_telemetry',
+      typed as float.
+  - name: heading
+    type: string
+    required: false
+    description: Column 'heading' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: accuracy_meters
+    type: string
+    required: false
+    description: Column 'accuracy_meters' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: trip_id
+    type: string
+    required: true
+    description: Column 'trip_id' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: status
+    type: string
+    required: false
+    description: Column 'status' projected from source table 'driver_telemetry', typed
+      as string.
+  - name: city_code
+    type: string
+    required: false
+    description: Column 'city_code' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: country_code
+    type: string
+    required: false
+    description: Column 'country_code' projected from source table 'driver_telemetry',
+      typed as string.
+  - name: timestamp
+    type: timestamp
+    required: false
+    description: Column 'timestamp' projected from source table 'driver_telemetry',
+      typed as timestamp.
+  - name: timestamp_date
+    type: date
+    required: false
+    description: 'Partition column: the calendar date of `timestamp`.'
+
+primary_key:
+- telemetry_id
+
+quality:
+  row_rules:
+  - name: telemetry_id_not_null
+    sql: telemetry_id IS NOT NULL
+    category: completeness
+    description: telemetry_id is always present (never null).
+  - name: driver_id_not_null
+    sql: driver_id IS NOT NULL
+    category: completeness
+    description: driver_id is always present (never null).
+  - name: trip_id_not_null
+    sql: trip_id IS NOT NULL
+    category: completeness
+    description: trip_id is always present (never null).
+  - name: telemetry_id_not_null
+    sql: telemetry_id IS NOT NULL
+    category: completeness
+    description: telemetry_id is always present (never null).
+  - name: gps_lat_range_min
+    sql: gps_lat IS NULL OR gps_lat >= -90.0
+    category: validity
+    description: gps_lat is at least -90.0 when present.
+  - name: gps_lat_range_max
+    sql: gps_lat IS NULL OR gps_lat <= 90.0
+    category: validity
+    description: gps_lat is at most 90.0 when present.
+  - name: gps_lng_range_min
+    sql: gps_lng IS NULL OR gps_lng >= -180.0
+    category: validity
+    description: gps_lng is at least -180.0 when present.
+  - name: gps_lng_range_max
+    sql: gps_lng IS NULL OR gps_lng <= 180.0
+    category: validity
+    description: gps_lng is at most 180.0 when present.
+
+transformations:
+- phase: pre
+  derive:
+    field: timestamp_date
+    sql: CAST(timestamp AS DATE)
+- deduplicate:
+    by:
+    - telemetry_id
+    sort_by:
+    - timestamp
+    order: desc
+
+materialization:
+  partition_by:
+  - country_code
+  - timestamp_date
+
+dataset: silver_rideflow_driver_telemetry
+
+source:
+  type: table
+  path: table:{bronze_root}.{bronze_layer}_rideflow_driver_telemetry
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

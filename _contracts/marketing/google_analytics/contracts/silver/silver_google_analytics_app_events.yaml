@@ -1,0 +1,127 @@
+version: 1.0.0
+
+info:
+  title: Silver — Google Analytics App Events
+  target_layer: silver
+  table_name: '{silver_layer}_google_analytics_app_events'
+  system: google_analytics
+  domain: marketing
+
+model:
+  fields:
+  - name: event_name
+    type: string
+    required: false
+    description: Column 'event_name' projected from source table 'app_events', typed
+      as string.
+  - name: event_timestamp
+    type: timestamp
+    required: true
+    description: Column 'event_timestamp' projected from source table 'app_events',
+      typed as timestamp.
+  - name: event_date
+    type: date
+    required: false
+    description: Column 'event_date' projected from source table 'app_events', typed
+      as date.
+  - name: user_pseudo_id
+    type: string
+    required: true
+    description: Column 'user_pseudo_id' projected from source table 'app_events',
+      typed as string.
+  - name: user_id
+    type: string
+    required: true
+    description: Column 'user_id' projected from source table 'app_events', typed
+      as string.
+  - name: device_id
+    type: string
+    required: true
+    pii: true
+    classification: device_id
+    description: Column 'device_id' projected from source table 'app_events', typed
+      as string. Personal data (device_id), real values here, masked at gold (hash).
+  - name: ip_address
+    type: string
+    required: false
+    pii: true
+    classification: ip_address
+    description: Column 'ip_address' projected from source table 'app_events', typed
+      as string. Personal data (ip_address), real values here, masked at gold (redact).
+  - name: device_category
+    type: string
+    required: false
+    description: Column 'device_category' projected from source table 'app_events',
+      typed as string.
+  - name: device_os
+    type: string
+    required: false
+    description: Column 'device_os' projected from source table 'app_events', typed
+      as string.
+  - name: geo_country
+    type: string
+    required: false
+    description: Column 'geo_country' projected from source table 'app_events', typed
+      as string.
+  - name: geo_city
+    type: string
+    required: false
+    description: Column 'geo_city' projected from source table 'app_events', typed
+      as string.
+  - name: app_version
+    type: string
+    required: false
+    description: Column 'app_version' projected from source table 'app_events', typed
+      as string.
+  - name: event_params_json
+    type: string
+    required: false
+    description: Column 'event_params_json' projected from source table 'app_events',
+      typed as string.
+
+materialization:
+  strategy: overwrite
+  partition_by:
+  - geo_country
+  - event_date
+
+quality:
+  row_rules:
+  - name: event_timestamp_not_null
+    sql: event_timestamp IS NOT NULL
+    category: completeness
+    description: event_timestamp is always present (never null).
+  - name: user_pseudo_id_not_null
+    sql: user_pseudo_id IS NOT NULL
+    category: completeness
+    description: user_pseudo_id is always present (never null).
+  - name: user_id_not_null
+    sql: user_id IS NOT NULL
+    category: completeness
+    description: user_id is always present (never null).
+  - name: device_id_not_null
+    sql: device_id IS NOT NULL
+    category: completeness
+    description: device_id is always present (never null).
+
+dataset: silver_google_analytics_app_events
+
+source:
+  type: table
+  path: table:{bronze_root}.{bronze_layer}_google_analytics_app_events
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'
+
+primary_key:
+- device_category
+
+transformations:
+- deduplicate:
+    by:
+    - device_category
+    sort_by:
+    - _lakelogic_processed_at
+    order: desc

@@ -1,0 +1,68 @@
+version: 1.0.0
+
+info:
+  title: Gold — Dim Traffic Source
+  target_layer: gold
+  description: 'grain: one row per traffic_source'
+  table_name: '{gold_layer}_dim_traffic_source'
+  system: google_analytics
+  domain: marketing
+
+model:
+  fields:
+  - name: traffic_source_sk
+    type: string
+    required: false
+    description: 'Surrogate key: sha256 of the business key, written by the materializer;
+      ''-1'' is the unknown member.'
+  - name: traffic_source
+    type: string
+    required: true
+    description: Dimension attribute 'traffic_source', projected from the 'traffic_source'
+      entity.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_dim_traffic_source
+
+primary_key:
+- traffic_source
+
+quality:
+  dataset_rules:
+  - unique:
+      columns:
+      - traffic_source
+      name: traffic_source_unique
+      category: uniqueness
+      description: No two rows share the same traffic_source.
+
+materialization:
+  scd1:
+    surrogate_key: traffic_source_sk
+    surrogate_key_strategy: hash
+    unknown_member:
+      enabled: true
+      surrogate_key_value: '-1'
+
+transformations:
+- phase: pre
+  sql: |-
+    SELECT DISTINCT traffic_source
+    FROM source
+    WHERE traffic_source IS NOT NULL
+- phase: pre
+  derive:
+    field: system
+    sql: '''google_analytics'''
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_google_analytics_sessions
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

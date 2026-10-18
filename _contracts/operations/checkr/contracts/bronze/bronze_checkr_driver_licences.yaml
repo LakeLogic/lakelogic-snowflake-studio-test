@@ -1,0 +1,46 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Checkr Driver Licences
+  target_layer: bronze
+  table_name: '{bronze_layer}_checkr_driver_licences'
+  domain: operations
+  system: checkr
+
+model:
+  fields:
+  - name: full_name
+    type: string
+    pii: true
+    classification: person_name
+    description: Observed string column ingested from the scanned source operations.checkr.driver_licences.
+      Personal data (person_name), not masked.
+  - name: licence_number
+    type: string
+    pii: true
+    classification: licence_id
+    description: Observed string column ingested from the scanned source operations.checkr.driver_licences.
+      Personal data (licence_id), not masked.
+  - name: date_of_birth
+    type: string
+    pii: true
+    classification: date_of_birth
+    description: Observed string column ingested from the scanned source operations.checkr.driver_licences.
+      Personal data (date_of_birth), not masked.
+  - name: expiry_date
+    type: date
+    description: Observed date column ingested from the scanned source operations.checkr.driver_licences.
+  - name: vehicle_classes
+    type: string
+    description: Observed string column ingested from the scanned source operations.checkr.driver_licences.
+
+source:
+  type: landing
+  path: '{landing_root}/driver_licences'
+  format: parquet
+  load_mode: full
+
+primary_key:
+- licence_number
+
+dataset: bronze_checkr_driver_licences

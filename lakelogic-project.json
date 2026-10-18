@@ -1,0 +1,35 @@
+{
+  "approval_seal": "sha256:4eb207b04b65320c4d32ffba41eac7bae8a56f63d105b18e6df1f2a3b308db9c",
+  "deployment_targets": {
+    "environments": {
+      "dev": {
+        "catalog_layout": "per_domain",
+        "compute": "LAKELOGIC_WH",
+        "compute_pool": "LLDEMO_POOL",
+        "container": "LLDEMO_DEV",
+        "engine_version": "1.79.4",
+        "engine_wheel": null,
+        "landing_root": "@LLDEMO_DEV_{domain}.LANDING.FILES/{system}",
+        "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+        "project_root": "LLDEMO_REPO",
+        "secret_name": null,
+        "secret_scope": null
+      }
+    },
+    "platform": "snowflake",
+    "unset_environments": [
+      "staging",
+      "prod"
+    ]
+  },
+  "design_snapshot_id": "snap-429b586fd4c04d3d",
+  "engine_version": "1.79.4",
+  "kind": "lakelogic-project-download",
+  "platform": "snowflake",
+  "project_file_count": 133,
+  "project_name": "RideFlow \u2014 Trip & Revenue Analytics (copy)",
+  "rendered_at": "2026-10-18T11:13:06Z",
+  "revision_hash": "chv1:a5264ea0ab53dafe06f0059818462cccb7f8c7f4df07d6b7e974488159c5b1df",
+  "saas_version": "0.1.0",
+  "statement": "downloaded \u2014 not delivered; not tracked as a delivery"
+}

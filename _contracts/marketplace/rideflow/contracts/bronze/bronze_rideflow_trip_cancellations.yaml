@@ -1,0 +1,63 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Rideflow Trip Cancellations
+  target_layer: bronze
+  table_name: '{bronze_layer}_rideflow_trip_cancellations'
+  domain: marketplace
+  system: rideflow
+
+model:
+  fields:
+  - name: cancellation_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: trip_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: driver_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: cancelled_by
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: cancel_reason_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: city_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: country_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: requested_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: cancelled_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+  - name: cancellation_fee
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_cancellations.
+
+source:
+  type: landing
+  path: '{landing_root}/trip_cancellations'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: country_code_partition_not_null
+    sql: country_code IS NOT NULL
+    category: completeness
+    description: country_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: bronze_rideflow_trip_cancellations

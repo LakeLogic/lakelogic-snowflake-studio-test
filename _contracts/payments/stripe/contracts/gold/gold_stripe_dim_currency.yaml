@@ -1,0 +1,67 @@
+version: 1.0.0
+
+info:
+  title: Gold — Dim Currency
+  target_layer: gold
+  description: 'grain: one row per currency'
+  table_name: '{gold_layer}_stripe_dim_currency'
+  system: stripe
+  domain: payments
+
+model:
+  fields:
+  - name: currency_sk
+    type: string
+    required: false
+    description: 'Surrogate key: sha256 of the business key, written by the materializer;
+      ''-1'' is the unknown member.'
+  - name: currency
+    type: string
+    required: true
+    description: Dimension attribute 'currency', projected from the 'currency' entity.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_stripe_dim_currency
+
+primary_key:
+- currency
+
+quality:
+  dataset_rules:
+  - unique:
+      columns:
+      - currency
+      name: currency_unique
+      category: uniqueness
+      description: No two rows share the same currency.
+
+materialization:
+  scd1:
+    surrogate_key: currency_sk
+    surrogate_key_strategy: hash
+    unknown_member:
+      enabled: true
+      surrogate_key_value: '-1'
+
+transformations:
+- phase: pre
+  sql: |-
+    SELECT DISTINCT currency
+    FROM source
+    WHERE currency IS NOT NULL
+- phase: pre
+  derive:
+    field: system
+    sql: '''stripe'''
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_stripe_refunds
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

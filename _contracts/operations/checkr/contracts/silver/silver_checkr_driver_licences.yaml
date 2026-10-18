@@ -1,0 +1,78 @@
+version: 1.0.0
+
+info:
+  title: Silver — Checkr Driver Licences
+  target_layer: silver
+  table_name: '{silver_layer}_checkr_driver_licences'
+  system: checkr
+  domain: operations
+
+model:
+  fields:
+  - name: full_name
+    type: string
+    required: false
+    pii: true
+    classification: person_name
+    description: Column 'full_name' projected from source table 'driver_licences',
+      typed as string. Personal data (person_name), real values here, masked at gold
+      (redact).
+  - name: licence_number
+    type: string
+    required: true
+    pii: true
+    classification: licence_id
+    description: Business key 'licence_number' (from source table 'driver_licences'),
+      typed as string. Personal data (licence_id), real values here, masked at gold
+      (hash).
+  - name: date_of_birth
+    type: string
+    required: false
+    pii: true
+    classification: date_of_birth
+    description: Column 'date_of_birth' projected from source table 'driver_licences',
+      typed as string. Personal data (date_of_birth), real values here, masked at
+      gold (nullify).
+  - name: expiry_date
+    type: date
+    required: false
+    description: Column 'expiry_date' projected from source table 'driver_licences',
+      typed as date.
+  - name: vehicle_classes
+    type: string
+    required: false
+    description: Column 'vehicle_classes' projected from source table 'driver_licences',
+      typed as string.
+
+primary_key:
+- licence_number
+
+quality:
+  row_rules:
+  - name: licence_number_not_null
+    sql: licence_number IS NOT NULL
+    category: completeness
+    description: licence_number is always present (never null).
+  - name: licence_number_not_null
+    sql: licence_number IS NOT NULL
+    category: completeness
+    description: licence_number is always present (never null).
+
+dataset: silver_checkr_driver_licences
+
+source:
+  type: table
+  path: table:{bronze_root}.{bronze_layer}_checkr_driver_licences
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'
+
+transformations:
+- deduplicate:
+    by:
+    - licence_number
+    sort_by:
+    - _lakelogic_processed_at
+    order: desc

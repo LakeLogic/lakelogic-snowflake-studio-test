@@ -1,0 +1,72 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Rideflow Driver Telemetry
+  target_layer: bronze
+  table_name: '{bronze_layer}_rideflow_driver_telemetry'
+  domain: marketplace
+  system: rideflow
+
+model:
+  fields:
+  - name: telemetry_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: driver_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: gps_lat
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+      Personal data (gps_coordinate), not masked.
+  - name: gps_lng
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+      Personal data (gps_coordinate), not masked.
+  - name: speed_kmh
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: heading
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: accuracy_meters
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: trip_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: status
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: city_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: country_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+  - name: timestamp
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.driver_telemetry.
+
+source:
+  type: landing
+  path: '{landing_root}/driver_telemetry'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: country_code_partition_not_null
+    sql: country_code IS NOT NULL
+    category: completeness
+    description: country_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: bronze_rideflow_driver_telemetry

@@ -1,0 +1,84 @@
+version: 1.0.0
+
+info:
+  title: Gold — Dim Rider Profiles
+  target_layer: gold
+  description: 'grain: one row per rider'
+  table_name: '{gold_layer}_dim_rider_profiles'
+  system: rideflow
+  domain: marketplace
+
+model:
+  fields:
+  - name: rider_profiles_sk
+    type: string
+    required: false
+    description: 'Surrogate key: sha256 of the business key, written by the materializer;
+      ''-1'' is the unknown member.'
+  - name: rider_id
+    type: string
+    required: true
+    description: Dimension attribute 'rider_id', projected from the 'rider_profiles'
+      entity.
+  - name: city_code
+    type: string
+    required: false
+    description: Dimension attribute 'city_code', projected from the 'rider_profiles'
+      entity.
+  - name: country_code
+    type: string
+    required: false
+    description: Dimension attribute 'country_code', projected from the 'rider_profiles'
+      entity.
+  - name: preferred_payment_method
+    type: string
+    required: false
+    description: Dimension attribute 'preferred_payment_method', projected from the
+      'rider_profiles' entity.
+  - name: signup_date
+    type: date
+    required: false
+    description: Dimension attribute 'signup_date', projected from the 'rider_profiles'
+      entity.
+  - name: status
+    type: string
+    required: false
+    description: Dimension attribute 'status', projected from the 'rider_profiles'
+      entity.
+  - name: updated_at
+    type: timestamp
+    required: false
+    description: Dimension attribute 'updated_at', projected from the 'rider_profiles'
+      entity.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_dim_rider_profiles
+
+primary_key:
+- rider_id
+
+materialization:
+  scd1:
+    surrogate_key: rider_profiles_sk
+    surrogate_key_strategy: hash
+    unknown_member:
+      enabled: true
+      surrogate_key_value: '-1'
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_rideflow_rider_profiles
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'
+
+transformations:
+- phase: pre
+  derive:
+    field: system
+    sql: '''rideflow'''

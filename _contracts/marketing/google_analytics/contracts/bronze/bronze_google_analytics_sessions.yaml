@@ -1,0 +1,72 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Google Analytics Sessions
+  target_layer: bronze
+  table_name: '{bronze_layer}_google_analytics_sessions'
+  domain: marketing
+  system: google_analytics
+
+model:
+  fields:
+  - name: session_id
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: user_pseudo_id
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: user_id
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: ip_address
+    type: string
+    pii: true
+    classification: ip_address
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+      Personal data (ip_address), not masked.
+  - name: session_start
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: session_duration_seconds
+    type: integer
+    description: Observed integer column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: page_views
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: traffic_source
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: traffic_medium
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: traffic_campaign
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: device_category
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: geo_country
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+  - name: landing_page
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_analytics.sessions.
+
+source:
+  type: landing
+  path: '{landing_root}/sessions'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: geo_country_partition_not_null
+    sql: geo_country IS NOT NULL
+    category: completeness
+    description: geo_country is always present (never null).
+
+materialization:
+  partition_by:
+  - geo_country
+
+dataset: bronze_google_analytics_sessions

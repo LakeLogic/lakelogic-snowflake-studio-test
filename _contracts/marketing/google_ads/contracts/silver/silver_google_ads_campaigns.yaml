@@ -1,0 +1,101 @@
+version: 1.0.0
+
+info:
+  title: Silver — Google Ads Campaigns
+  target_layer: silver
+  table_name: '{silver_layer}_google_ads_campaigns'
+  system: google_ads
+  domain: marketing
+
+model:
+  fields:
+  - name: campaign_id
+    type: string
+    required: true
+    description: Business key 'campaign_id' (from source table 'campaigns'), typed
+      as string.
+  - name: campaign_name
+    type: string
+    required: false
+    description: Column 'campaign_name' projected from source table 'campaigns', typed
+      as string.
+  - name: ad_group_id
+    type: string
+    required: true
+    description: Column 'ad_group_id' projected from source table 'campaigns', typed
+      as string.
+  - name: ad_group_name
+    type: string
+    required: false
+    description: Column 'ad_group_name' projected from source table 'campaigns', typed
+      as string.
+  - name: date
+    type: date
+    required: false
+    description: Column 'date' projected from source table 'campaigns', typed as date.
+  - name: impressions
+    type: integer
+    required: false
+    description: Column 'impressions' projected from source table 'campaigns', typed
+      as integer.
+  - name: clicks
+    type: integer
+    required: false
+    description: Column 'clicks' projected from source table 'campaigns', typed as
+      integer.
+  - name: cost
+    type: float
+    required: false
+    description: Column 'cost' projected from source table 'campaigns', typed as float.
+  - name: conversions
+    type: integer
+    required: false
+    description: Column 'conversions' projected from source table 'campaigns', typed
+      as integer.
+  - name: conversion_value
+    type: decimal(18,2)
+    required: false
+    description: Column 'conversion_value' projected from source table 'campaigns',
+      typed as decimal(18,2).
+  - name: currency
+    type: string
+    required: false
+    description: Column 'currency' projected from source table 'campaigns', typed
+      as string.
+
+primary_key:
+- campaign_id
+
+quality:
+  row_rules:
+  - name: campaign_id_not_null
+    sql: campaign_id IS NOT NULL
+    category: completeness
+    description: campaign_id is always present (never null).
+  - name: ad_group_id_not_null
+    sql: ad_group_id IS NOT NULL
+    category: completeness
+    description: ad_group_id is always present (never null).
+  - name: campaign_id_not_null
+    sql: campaign_id IS NOT NULL
+    category: completeness
+    description: campaign_id is always present (never null).
+
+transformations:
+- deduplicate:
+    by:
+    - campaign_id
+    sort_by:
+    - date
+    order: desc
+
+dataset: silver_google_ads_campaigns
+
+source:
+  type: table
+  path: table:{bronze_root}.{bronze_layer}_google_ads_campaigns
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

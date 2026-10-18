@@ -1,0 +1,46 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Stripe Refunds
+  target_layer: bronze
+  table_name: '{bronze_layer}_stripe_refunds'
+  domain: payments
+  system: stripe
+
+model:
+  fields:
+  - name: refund_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: charge_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: amount
+    type: float
+    description: Observed float column ingested from the scanned source payments.stripe.refunds.
+  - name: currency
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: status
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: reason
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: refund_reason
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.refunds.
+  - name: created_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source payments.stripe.refunds.
+
+source:
+  type: landing
+  path: '{landing_root}/refunds'
+  format: parquet
+  load_mode: full
+
+dataset: bronze_stripe_refunds

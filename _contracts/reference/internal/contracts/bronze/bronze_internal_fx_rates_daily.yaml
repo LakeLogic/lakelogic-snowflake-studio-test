@@ -1,0 +1,39 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Internal Fx Rates Daily
+  target_layer: bronze
+  table_name: '{bronze_layer}_internal_fx_rates_daily'
+  domain: reference
+  system: internal
+
+model:
+  fields:
+  - name: rate_date
+    type: date
+    description: Observed date column ingested from the scanned source reference.internal.fx_rates_daily.
+  - name: base_currency
+    type: string
+    description: Observed string column ingested from the scanned source reference.internal.fx_rates_daily.
+  - name: quote_currency
+    type: string
+    description: Observed string column ingested from the scanned source reference.internal.fx_rates_daily.
+  - name: rate
+    type: float
+    description: Observed float column ingested from the scanned source reference.internal.fx_rates_daily.
+  - name: source_feed
+    type: string
+    description: Observed string column ingested from the scanned source reference.internal.fx_rates_daily.
+
+source:
+  type: landing
+  path: '{landing_root}/fx_rates_daily'
+  format: parquet
+  load_mode: full
+
+primary_key:
+- rate_date
+- base_currency
+- quote_currency
+
+dataset: bronze_internal_fx_rates_daily

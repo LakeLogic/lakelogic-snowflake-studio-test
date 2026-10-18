@@ -1,0 +1,52 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Google Ads Campaigns
+  target_layer: bronze
+  table_name: '{bronze_layer}_google_ads_campaigns'
+  domain: marketing
+  system: google_ads
+
+model:
+  fields:
+  - name: campaign_id
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: campaign_name
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: ad_group_id
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: ad_group_name
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: date
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: impressions
+    type: integer
+    description: Observed integer column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: clicks
+    type: integer
+    description: Observed integer column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: cost
+    type: float
+    description: Observed float column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: conversions
+    type: integer
+    description: Observed integer column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: conversion_value
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+  - name: currency
+    type: string
+    description: Observed string column ingested from the scanned source marketing.google_ads.campaigns.
+
+source:
+  type: landing
+  path: '{landing_root}/campaigns'
+  format: parquet
+  load_mode: full
+
+dataset: bronze_google_ads_campaigns

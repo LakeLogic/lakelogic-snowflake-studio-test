@@ -1,0 +1,85 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Zendesk Support Tickets
+  target_layer: bronze
+  table_name: '{bronze_layer}_zendesk_support_tickets'
+  domain: operations
+  system: zendesk
+
+model:
+  fields:
+  - name: ticket_id
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: entry_point
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: trip_id
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: driver_id
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: charge_id
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: requester_email
+    type: string
+    pii: true
+    classification: email
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+      Personal data (email), not masked.
+  - name: requester_name
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: requester_phone
+    type: string
+    pii: true
+    classification: phone
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+      Personal data (phone), not masked.
+  - name: subject
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: ticket_description
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: status
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: priority
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: channel
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: assignee
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: tags_json
+    type: string
+    description: Observed string column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: created_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: updated_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: solved_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source operations.zendesk.support_tickets.
+  - name: satisfaction_rating
+    type: float
+    description: Observed float column ingested from the scanned source operations.zendesk.support_tickets.
+
+source:
+  type: landing
+  path: '{landing_root}/support_tickets'
+  format: parquet
+  load_mode: full
+
+dataset: bronze_zendesk_support_tickets

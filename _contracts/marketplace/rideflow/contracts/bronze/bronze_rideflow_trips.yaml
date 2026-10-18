@@ -1,0 +1,108 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Rideflow Trips
+  target_layer: bronze
+  table_name: '{bronze_layer}_rideflow_trips'
+  domain: marketplace
+  system: rideflow
+
+model:
+  fields:
+  - name: trip_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: driver_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: trip_type
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: pickup_lat
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+      Personal data (gps_coordinate), not masked.
+  - name: pickup_lng
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+      Personal data (gps_coordinate), not masked.
+  - name: dropoff_lat
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+      Personal data (gps_coordinate), not masked.
+  - name: dropoff_lng
+    type: string
+    pii: true
+    classification: gps_coordinate
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+      Personal data (gps_coordinate), not masked.
+  - name: city_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: country_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: requested_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trips.
+  - name: pickup_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trips.
+  - name: dropoff_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trips.
+  - name: distance_km
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: duration_minutes
+    type: integer
+    description: Observed integer column ingested from the scanned source marketplace.rideflow.trips.
+  - name: fare_amount
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: surge_multiplier
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: tip_amount
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: payment_method
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+  - name: rider_rating
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: driver_rating
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trips.
+  - name: notes
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trips.
+
+source:
+  type: landing
+  path: '{landing_root}/trips'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: country_code_partition_not_null
+    sql: country_code IS NOT NULL
+    category: completeness
+    description: country_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: bronze_rideflow_trips

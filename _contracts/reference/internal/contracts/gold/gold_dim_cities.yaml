@@ -1,0 +1,86 @@
+version: 1.0.0
+
+info:
+  title: Gold — Dim Cities
+  target_layer: gold
+  description: 'grain: one row per city'
+  table_name: '{gold_layer}_dim_cities'
+  system: internal
+  domain: reference
+
+model:
+  fields:
+  - name: cities_sk
+    type: string
+    required: false
+    description: 'Surrogate key: sha256 of the business key, written by the materializer;
+      ''-1'' is the unknown member.'
+  - name: city_code
+    type: string
+    required: true
+    description: Dimension attribute 'city_code', projected from the 'cities' entity.
+  - name: city_name
+    type: string
+    required: false
+    description: Dimension attribute 'city_name', projected from the 'cities' entity.
+  - name: country_code
+    type: string
+    required: false
+    description: Dimension attribute 'country_code', projected from the 'cities' entity.
+  - name: default_currency
+    type: string
+    required: false
+    description: Dimension attribute 'default_currency', projected from the 'cities'
+      entity.
+  - name: geofence_wkt
+    type: string
+    required: false
+    description: Dimension attribute 'geofence_wkt', projected from the 'cities' entity.
+  - name: is_active
+    type: boolean
+    required: false
+    description: Dimension attribute 'is_active', projected from the 'cities' entity.
+  - name: launched_at
+    type: timestamp
+    required: false
+    description: Dimension attribute 'launched_at', projected from the 'cities' entity.
+  - name: sunset_at
+    type: timestamp
+    required: false
+    description: Dimension attribute 'sunset_at', projected from the 'cities' entity.
+  - name: timezone
+    type: string
+    required: false
+    description: Dimension attribute 'timezone', projected from the 'cities' entity.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_dim_cities
+
+primary_key:
+- city_code
+
+materialization:
+  scd1:
+    surrogate_key: cities_sk
+    surrogate_key_strategy: hash
+    unknown_member:
+      enabled: true
+      surrogate_key_value: '-1'
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_internal_cities
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'
+
+transformations:
+- phase: pre
+  derive:
+    field: system
+    sql: '''internal'''

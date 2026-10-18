@@ -1,0 +1,88 @@
+version: 1.0.0
+
+info:
+  title: Silver — Internal Cities
+  target_layer: silver
+  table_name: '{silver_layer}_internal_cities'
+  system: internal
+  domain: reference
+
+model:
+  fields:
+  - name: city_code
+    type: string
+    required: true
+    description: Business key 'city_code' (from source table 'cities'), typed as string.
+  - name: city_name
+    type: string
+    required: false
+    description: Column 'city_name' projected from source table 'cities', typed as
+      string.
+  - name: country_code
+    type: string
+    required: false
+    description: Column 'country_code' projected from source table 'cities', typed
+      as string.
+  - name: timezone
+    type: string
+    required: false
+    description: Column 'timezone' projected from source table 'cities', typed as
+      string.
+  - name: default_currency
+    type: string
+    required: false
+    description: Column 'default_currency' projected from source table 'cities', typed
+      as string.
+  - name: geofence_wkt
+    type: string
+    required: false
+    description: Column 'geofence_wkt' projected from source table 'cities', typed
+      as string.
+  - name: launched_at
+    type: timestamp
+    required: false
+    description: Column 'launched_at' projected from source table 'cities', typed
+      as timestamp.
+  - name: sunset_at
+    type: timestamp
+    required: false
+    description: Column 'sunset_at' projected from source table 'cities', typed as
+      timestamp.
+  - name: is_active
+    type: boolean
+    required: false
+    description: Column 'is_active' projected from source table 'cities', typed as
+      boolean.
+
+primary_key:
+- city_code
+
+quality:
+  row_rules:
+  - name: city_code_not_null
+    sql: city_code IS NOT NULL
+    category: completeness
+    description: city_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: silver_internal_cities
+
+source:
+  type: table
+  path: table:{bronze_root}.{bronze_layer}_internal_cities
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'
+
+transformations:
+- deduplicate:
+    by:
+    - city_code
+    sort_by:
+    - _lakelogic_processed_at
+    order: desc

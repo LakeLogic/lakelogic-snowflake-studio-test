@@ -1,0 +1,26 @@
+{
+  "compute_pool": "LLDEMO_POOL",
+  "database": "LLDEMO_DEV",
+  "environments": {
+    "dev": {
+      "compute_pool": "LLDEMO_POOL",
+      "database": "LLDEMO_DEV",
+      "git_api_integration": "GIT_API_RIDEFLOW_TRIP_REVENUE_ANALYTICS_COPY",
+      "git_repository": "LLDEMO_REPO",
+      "lakelogic_version": "1.79.4",
+      "lakelogic_wheel": "",
+      "landing_root": "@LLDEMO_DEV_{domain}.LANDING.FILES/{system}",
+      "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+      "secret": "",
+      "warehouse": "LAKELOGIC_WH"
+    }
+  },
+  "git_api_integration": "GIT_API_RIDEFLOW_TRIP_REVENUE_ANALYTICS_COPY",
+  "git_repository": "LLDEMO_REPO",
+  "lakelogic_version": "1.79.4",
+  "lakelogic_wheel": "",
+  "landing_root": "@LLDEMO_DEV_{domain}.LANDING.FILES/{system}",
+  "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+  "secret": "",
+  "warehouse": "LAKELOGIC_WH"
+}

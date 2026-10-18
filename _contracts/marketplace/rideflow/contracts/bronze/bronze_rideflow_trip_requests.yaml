@@ -1,0 +1,81 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Rideflow Trip Requests
+  target_layer: bronze
+  table_name: '{bronze_layer}_rideflow_trip_requests'
+  domain: marketplace
+  system: rideflow
+
+model:
+  fields:
+  - name: request_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: trip_type
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: pickup_lat
+    type: float
+    pii: true
+    classification: gps_coordinate
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+      Personal data (gps_coordinate), not masked.
+  - name: pickup_lng
+    type: float
+    pii: true
+    classification: gps_coordinate
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+      Personal data (gps_coordinate), not masked.
+  - name: dropoff_lat
+    type: float
+    pii: true
+    classification: gps_coordinate
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+      Personal data (gps_coordinate), not masked.
+  - name: dropoff_lng
+    type: float
+    pii: true
+    classification: gps_coordinate
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+      Personal data (gps_coordinate), not masked.
+  - name: city_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: country_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: requested_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: estimated_fare
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: estimated_eta_minutes
+    type: integer
+    description: Observed integer column ingested from the scanned source marketplace.rideflow.trip_requests.
+  - name: surge_multiplier
+    type: float
+    description: Observed float column ingested from the scanned source marketplace.rideflow.trip_requests.
+
+source:
+  type: landing
+  path: '{landing_root}/trip_requests'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: country_code_partition_not_null
+    sql: country_code IS NOT NULL
+    category: completeness
+    description: country_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: bronze_rideflow_trip_requests

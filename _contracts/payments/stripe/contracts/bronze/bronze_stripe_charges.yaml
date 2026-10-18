@@ -1,0 +1,64 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Stripe Charges
+  target_layer: bronze
+  table_name: '{bronze_layer}_stripe_charges'
+  domain: payments
+  system: stripe
+
+model:
+  fields:
+  - name: charge_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: trip_id
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: amount
+    type: float
+    description: Observed float column ingested from the scanned source payments.stripe.charges.
+  - name: currency
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: status
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: payment_method_type
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+  - name: card_last_four
+    type: string
+    sensitive: true
+    classification: financial_account
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+      Confidential (financial_account), not masked.
+  - name: billing_email
+    type: string
+    pii: true
+    classification: email
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+      Personal data (email), not masked.
+  - name: billing_address
+    type: string
+    pii: true
+    classification: postal_address
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+      Personal data (postal_address), not masked.
+  - name: created_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source payments.stripe.charges.
+  - name: metadata_json
+    type: string
+    description: Observed string column ingested from the scanned source payments.stripe.charges.
+
+source:
+  type: landing
+  path: '{landing_root}/charges'
+  format: parquet
+  load_mode: full
+
+dataset: bronze_stripe_charges

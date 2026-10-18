@@ -1,0 +1,72 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Rideflow Rider App Events
+  target_layer: bronze
+  table_name: '{bronze_layer}_rideflow_rider_app_events'
+  domain: marketplace
+  system: rideflow
+
+model:
+  fields:
+  - name: event_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: rider_id
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: device_id
+    type: string
+    pii: true
+    classification: device_id
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+      Personal data (device_id), not masked.
+  - name: ip_address
+    type: string
+    pii: true
+    classification: ip_address
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+      Personal data (ip_address), not masked.
+  - name: event_name
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: screen_name
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: event_timestamp
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: app_version
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: platform
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: city_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: country_code
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+  - name: event_properties_json
+    type: string
+    description: Observed string column ingested from the scanned source marketplace.rideflow.rider_app_events.
+
+source:
+  type: landing
+  path: '{landing_root}/rider_app_events'
+  format: parquet
+  load_mode: full
+
+quality:
+  row_rules:
+  - name: country_code_partition_not_null
+    sql: country_code IS NOT NULL
+    category: completeness
+    description: country_code is always present (never null).
+
+materialization:
+  partition_by:
+  - country_code
+
+dataset: bronze_rideflow_rider_app_events

@@ -1,0 +1,127 @@
+version: 1.0.0
+
+info:
+  title: Gold — Fact App Events
+  target_layer: gold
+  description: 'grain: one row per app event'
+  table_name: '{gold_layer}_fact_app_events'
+  system: google_analytics
+  domain: marketing
+
+model:
+  fields:
+  - name: user_pseudo_id
+    type: string
+    required: true
+    description: Grain key of the 'app_events' fact.
+  - name: event_timestamp
+    type: timestamp
+    required: true
+    description: Grain key of the 'app_events' fact.
+  - name: event_name
+    type: string
+    required: true
+    description: Grain key of the 'app_events' fact.
+  - name: event_date
+    type: date
+    required: false
+    description: Column 'event_date' of the 'app_events' fact.
+  - name: app_version
+    type: string
+    required: false
+    description: Column 'app_version' of the 'app_events' fact.
+  - name: device_os
+    type: string
+    required: false
+    description: Column 'device_os' of the 'app_events' fact.
+  - name: geo_country
+    type: string
+    required: false
+    description: Column 'geo_country' of the 'app_events' fact.
+  - name: geo_city
+    type: string
+    required: false
+    description: Column 'geo_city' of the 'app_events' fact.
+  - name: city_sk
+    type: string
+    required: true
+    foreign_key:
+      contract: gold_dim_cities
+      column: cities_sk
+    description: Surrogate key of gold_dim_cities, looked up on its business key;
+      '-1' when the dimension does not know the row.
+  - name: system
+    type: string
+    required: true
+    description: Source system this row came from
+
+dataset: gold_fact_app_events
+
+primary_key:
+- user_pseudo_id
+- event_timestamp
+- event_name
+
+quality:
+  dataset_rules:
+  - unique:
+      columns:
+      - user_pseudo_id
+      - event_timestamp
+      - event_name
+      name: user_pseudo_id_event_timestamp_event_name_unique
+      category: uniqueness
+      description: No two rows share the same user_pseudo_id, event_timestamp, event_name.
+  - name: city_sk_unknown_member_rows
+    sql: SELECT COUNT(*) FROM {dataset} WHERE city_sk = '-1'
+    must_be_less_than: 1
+    severity: warning
+    category: consistency
+    description: Rows whose city_sk fell back to the unknown member — the dimension
+      did not know them when this fact ran.
+
+transformations:
+- phase: pre
+  sql: |-
+    SELECT
+      r.user_pseudo_id,
+      r.event_timestamp,
+      r.event_name,
+      r.event_date,
+      r.app_version,
+      r.device_os,
+      r.geo_country,
+      r.geo_city,
+      COALESCE(d1.cities_sk, '-1') AS city_sk
+    FROM source r
+    LEFT JOIN gold_dim_cities d1
+      ON  r.geo_city = d1.city_code
+- phase: pre
+  derive:
+    field: system
+    sql: '''google_analytics'''
+
+links:
+- name: gold_dim_cities
+  type: table
+  path: table:{domain_catalog_prefix}_reference.{gold_layer}.{gold_layer}_dim_cities
+
+upstream:
+- gold_dim_cities
+
+materialization:
+  strategy: append
+  fact:
+    type: factless
+  partition_by:
+  - geo_country
+  - event_date
+
+source:
+  type: table
+  path: table:{silver_root}.{silver_layer}_google_analytics_app_events
+  load_mode: incremental
+  watermark_field: _lakelogic_processed_at
+
+metadata:
+  run_log_table: '{domain_catalog}._lakelogic_run_log'

@@ -1,0 +1,64 @@
+version: 1.0.0
+
+info:
+  title: Bronze — Twilio Sms Logs
+  target_layer: bronze
+  table_name: '{bronze_layer}_twilio_sms_logs'
+  domain: operations
+  system: twilio
+
+model:
+  fields:
+  - name: message_sid
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+  - name: recipient_phone
+    type: string
+    pii: true
+    classification: phone
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+      Personal data (phone), not masked.
+  - name: sender_phone
+    type: string
+    pii: true
+    classification: phone
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+      Personal data (phone), not masked.
+  - name: message_body
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+  - name: status
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+  - name: direction
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+  - name: num_segments
+    type: integer
+    description: Observed integer column ingested from the scanned source operations.twilio.sms_logs.
+  - name: price
+    type: float
+    description: Observed float column ingested from the scanned source operations.twilio.sms_logs.
+  - name: price_unit
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+  - name: sent_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source operations.twilio.sms_logs.
+  - name: delivered_at
+    type: timestamp
+    description: Observed timestamp column ingested from the scanned source operations.twilio.sms_logs.
+  - name: error_code
+    type: string
+    description: Observed string column ingested from the scanned source operations.twilio.sms_logs.
+
+source:
+  type: landing
+  path: '{landing_root}/sms_logs'
+  format: parquet
+  load_mode: full
+
+primary_key:
+- message_sid
+
+dataset: bronze_twilio_sms_logs
