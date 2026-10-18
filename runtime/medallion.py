@@ -164,7 +164,7 @@ def _stamp_load_time(df):
     return df
 
 
-def _log_run(proc, error, log=print):
+def _log_run(proc, error, log=print, good=0, quarantined=0):
     """One run-log row per contract, as LakeLogic's pipeline runner writes on Databricks and
     Fabric: this runtime calls the processor directly, so without it the domain's
     LAKELOGIC._lakelogic_run_log stayed empty (live run 2026-10-18). Core's own writer, so the
@@ -178,6 +178,15 @@ def _log_run(proc, error, log=print):
         if error is not None:
             report["status"] = "failed"
             report.update(capture_failure(error))
+        else:
+            # The runner's own mapping (succeeded / partial when every row was quarantined),
+            # so a Snowflake row means what a Databricks or Fabric row means.
+            from lakelogic.pipeline.runner import run_log_status
+
+            all_q = not good and quarantined > 0
+            report["status"] = run_log_status("all_rows_quarantined" if all_q else "success")
+            if all_q:
+                report["all_rows_quarantined"] = True
         write_run_log(report, proc.contract, engine_name=proc.engine_name,
                       run_log_mode=getattr(proc, "_run_log_mode", None))
     except Exception as exc:  # noqa: BLE001 - logging must not fail the pipeline
@@ -268,7 +277,7 @@ def run_layer(conn, database, sys_yaml, layer, log=print, environment="dev"):
                              quote_identifiers=False)
             log(f"    {rc.entity:<42} {layer:<7} good={ng:<6} quarantined={nb}")
             results.append((rc.entity, "ok", ng, nb))
-            _log_run(proc, None, log)
+            _log_run(proc, None, log, good=ng, quarantined=nb)
         except Exception as e:
             log(f"    {rc.entity:<42} {layer:<7} FAILED: {str(e)[:180]}")
             results.append((rc.entity, f"failed: {str(e)[:180]}", 0, 0))
