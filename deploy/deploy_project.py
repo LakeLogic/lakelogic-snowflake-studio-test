@@ -146,23 +146,27 @@ def main():
                  f"ORIGIN = '{repo_url}'")
     run(cur, f"ALTER GIT REPOSITORY {names['REPO']} FETCH")
 
-    # Clean slate for tasks: suspend + drop everything in PIPELINE (leaves first).
-    cur.execute(f"SHOW TASKS IN SCHEMA {db}.PIPELINE")
-    for t in [r[1] for r in cur.fetchall()]:
-        try:
-            cur.execute(f"ALTER TASK IF EXISTS {db}.PIPELINE.{t} SUSPEND")
-        except Exception:
-            pass
-    for _ in range(6):
-        cur.execute(f"SHOW TASKS IN SCHEMA {db}.PIPELINE")
-        left = [r[1] for r in cur.fetchall()]
-        if not left:
-            break
-        for t in left:
+    # Clean slate for tasks: suspend + drop every task in PIPELINE and the per-group task schemas
+    # (PIPELINE_DATA, PIPELINE_ADMIN, ... — Fabric's pipeline folders), leaves first.
+    cur.execute(f"SHOW SCHEMAS LIKE 'PIPELINE%' IN DATABASE {db}")
+    schemas = [r[1] for r in cur.fetchall()]
+    for schema in schemas:
+        cur.execute(f"SHOW TASKS IN SCHEMA {db}.{schema}")
+        for t in [r[1] for r in cur.fetchall()]:
             try:
-                cur.execute(f"DROP TASK IF EXISTS {db}.PIPELINE.{t}")
+                cur.execute(f"ALTER TASK IF EXISTS {db}.{schema}.{t} SUSPEND")
             except Exception:
                 pass
+        for _ in range(6):
+            cur.execute(f"SHOW TASKS IN SCHEMA {db}.{schema}")
+            left = [r[1] for r in cur.fetchall()]
+            if not left:
+                break
+            for t in left:
+                try:
+                    cur.execute(f"DROP TASK IF EXISTS {db}.{schema}.{t}")
+                except Exception:
+                    pass
 
     # Everything else comes from the generated files, in the layout's group order.
     for path in task_files():
@@ -184,7 +188,7 @@ def main():
               "PIPELINE.WHEELS (headless notebooks cannot reach PyPI without one).")
 
     if args.run:
-        run(cur, f"EXECUTE TASK {db}.PIPELINE.T_MESH")
+        run(cur, f"EXECUTE TASK {db}.PIPELINE_DATA.PL_DATA_00_MESH_ORCHESTRATOR")
     conn.commit()
     print("Deployed. Snowsight -> Monitoring -> Task History for runs.")
 
