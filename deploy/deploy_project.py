@@ -129,16 +129,16 @@ def main():
     cur = conn.cursor()
     run(cur, f"CREATE DATABASE IF NOT EXISTS {db}")
     run(cur, f"USE DATABASE {db}")
-    run(cur, "CREATE SCHEMA IF NOT EXISTS PIPELINE")
-    run(cur, "USE SCHEMA PIPELINE")
+    run(cur, 'CREATE SCHEMA IF NOT EXISTS "pipeline"')
+    run(cur, 'USE SCHEMA "pipeline"')
     if gh_user and pat:
         print("  -> CREATE OR REPLACE SECRET GIT_PAT (value not printed)")
         cur.execute(f"CREATE OR REPLACE SECRET GIT_PAT TYPE=PASSWORD USERNAME='{gh_user}' PASSWORD='{pat}'")
         run(cur, f"CREATE OR REPLACE API INTEGRATION {integration} API_PROVIDER = git_https_api "
                  f"API_ALLOWED_PREFIXES = ('https://github.com/{owner}') "
-                 f"ALLOWED_AUTHENTICATION_SECRETS = ({db}.PIPELINE.GIT_PAT) ENABLED = TRUE")
+                 f'ALLOWED_AUTHENTICATION_SECRETS = ({db}."pipeline".GIT_PAT) ENABLED = TRUE')
         run(cur, f"CREATE OR REPLACE GIT REPOSITORY {names['REPO']} API_INTEGRATION = {integration} "
-                 f"GIT_CREDENTIALS = {db}.PIPELINE.GIT_PAT ORIGIN = '{repo_url}'")
+                 f'GIT_CREDENTIALS = {db}."pipeline".GIT_PAT ORIGIN = \'{repo_url}\'')
     else:
         run(cur, f"CREATE OR REPLACE API INTEGRATION {integration} API_PROVIDER = git_https_api "
                  f"API_ALLOWED_PREFIXES = ('https://github.com/{owner}') ENABLED = TRUE")
@@ -151,20 +151,20 @@ def main():
     cur.execute(f"SHOW SCHEMAS LIKE 'PIPELINE%' IN DATABASE {db}")
     schemas = [r[1] for r in cur.fetchall()]
     for schema in schemas:
-        cur.execute(f"SHOW TASKS IN SCHEMA {db}.{schema}")
+        cur.execute(f'SHOW TASKS IN SCHEMA {db}."{schema}"')
         for t in [r[1] for r in cur.fetchall()]:
             try:
-                cur.execute(f"ALTER TASK IF EXISTS {db}.{schema}.{t} SUSPEND")
+                cur.execute(f'ALTER TASK IF EXISTS {db}."{schema}"."{t}" SUSPEND')
             except Exception:
                 pass
         for _ in range(6):
-            cur.execute(f"SHOW TASKS IN SCHEMA {db}.{schema}")
+            cur.execute(f'SHOW TASKS IN SCHEMA {db}."{schema}"')
             left = [r[1] for r in cur.fetchall()]
             if not left:
                 break
             for t in left:
                 try:
-                    cur.execute(f"DROP TASK IF EXISTS {db}.{schema}.{t}")
+                    cur.execute(f'DROP TASK IF EXISTS {db}."{schema}"."{t}"')
                 except Exception:
                     pass
 
@@ -180,15 +180,15 @@ def main():
     # PIPELINE.WHEELS.
     eai = os.getenv("SNOWFLAKE_PYPI_INTEGRATION", "").strip()
     if eai:
-        for nb in ("NB_00_SETUP", "NB_PIPELINE_DRIVER", "NB_TEST_DATA_DRIVER", "NB_SLO_CHECKS",
-                   "NB_COMPLIANCE_ERASURE", "NB_COMPLIANCE_RETENTION_CHECK", "NB_MAINTENANCE_OPTIMIZE"):
-            run(cur, f"ALTER NOTEBOOK {db}.PIPELINE.{nb} SET EXTERNAL_ACCESS_INTEGRATIONS = ({eai})")
+        for nb in ("nb_00_setup", "nb_pipeline_driver", "nb_test_data_driver", "nb_slo_checks",
+                   "nb_compliance_erasure", "nb_compliance_retention_check", "nb_maintenance_optimize"):
+            run(cur, f'ALTER NOTEBOOK {db}."pipeline"."{nb}" SET EXTERNAL_ACCESS_INTEGRATIONS = ({eai})')
     else:
         print("  note: no SNOWFLAKE_PYPI_INTEGRATION set, so task runs install LakeLogic from "
-              "PIPELINE.WHEELS (headless notebooks cannot reach PyPI without one).")
+              "\"pipeline\".\"wheels\" (headless notebooks cannot reach PyPI without one).")
 
     if args.run:
-        run(cur, f"EXECUTE TASK {db}.PIPELINE_DATA.PL_DATA_00_MESH_ORCHESTRATOR")
+        run(cur, f'EXECUTE TASK {db}."pipeline_data"."pl_data_00_mesh_orchestrator"')
     conn.commit()
     print("Deployed. Snowsight -> Monitoring -> Task History for runs.")
 

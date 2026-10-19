@@ -10,7 +10,7 @@
       "lakelogic_version": "1.79.7",
       "lakelogic_wheel": "",
       "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
-      "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+      "log_root": "@LLDEMO_DEV.\"pipeline\".\"lakelogic_logs\"",
       "secret": "",
       "warehouse": "LAKELOGIC_WH"
     }
@@ -20,7 +20,7 @@
   "lakelogic_version": "1.79.7",
   "lakelogic_wheel": "",
   "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
-  "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+  "log_root": "@LLDEMO_DEV.\"pipeline\".\"lakelogic_logs\"",
   "secret": "",
   "warehouse": "LAKELOGIC_WH"
 }

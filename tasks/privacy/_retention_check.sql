@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_PRIVACY;
-USE SCHEMA PIPELINE_PRIVACY;
-CREATE OR REPLACE TASK PL_PRIVACY_RETENTION WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 0 3 * * * UTC' TASK_AUTO_RETRY_ATTEMPTS = 0 COMMENT = 'pl_privacy_retention' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_COMPLIANCE_RETENTION_CHECK('op=retention fail_on_breach=true systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_privacy";
+USE SCHEMA "pipeline_privacy";
+CREATE OR REPLACE TASK "pl_privacy_retention" WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 0 3 * * * UTC' TASK_AUTO_RETRY_ATTEMPTS = 0 COMMENT = 'pl_privacy_retention' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_compliance_retention_check"('op=retention fail_on_breach=true systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');

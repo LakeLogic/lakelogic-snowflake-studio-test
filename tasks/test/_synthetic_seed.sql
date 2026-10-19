@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_TEST;
-USE SCHEMA PIPELINE_TEST;
-CREATE OR REPLACE TASK PL_TEST_SYNTHETIC_SEED WAREHOUSE = {{WH}} COMMENT = 'pl_test_synthetic_seed' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_TEST_DATA_DRIVER('rows=100 seed=7 generative=false systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_test";
+USE SCHEMA "pipeline_test";
+CREATE OR REPLACE TASK "pl_test_synthetic_seed" WAREHOUSE = {{WH}} COMMENT = 'pl_test_synthetic_seed' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_test_data_driver"('rows=100 seed=7 generative=false systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');

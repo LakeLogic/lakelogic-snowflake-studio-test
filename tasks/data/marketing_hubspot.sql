@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_DATA;
-USE SCHEMA PIPELINE_DATA;
-CREATE OR REPLACE TASK PL_DATA_MARKETING_HUBSPOT WAREHOUSE = {{WH}} COMMENT = 'pl_data_marketing_hubspot' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_PIPELINE_DRIVER('domain=marketing system=hubspot layer=all db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_data";
+USE SCHEMA "pipeline_data";
+CREATE OR REPLACE TASK "pl_data_marketing_hubspot" WAREHOUSE = {{WH}} COMMENT = 'pl_data_marketing_hubspot' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_pipeline_driver"('domain=marketing system=hubspot layer=all db={{DB}}');

@@ -9,7 +9,7 @@
       "engine_version": "1.79.7",
       "engine_wheel": null,
       "landing_root": "@LLDEMO_DEV_{domain}.FILES.LANDING/{system}",
-      "log_root": "@LLDEMO_DEV.PIPELINE.LAKELOGIC_LOGS",
+      "log_root": "@LLDEMO_DEV.\"pipeline\".\"lakelogic_logs\"",
       "project_root": "LLDEMO_REPO",
       "secret_name": null,
       "secret_scope": null

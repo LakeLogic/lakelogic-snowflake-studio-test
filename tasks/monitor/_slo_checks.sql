@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_MONITOR;
-USE SCHEMA PIPELINE_MONITOR;
-CREATE OR REPLACE TASK PL_MONITOR_SLO WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 30 5 * * * UTC' TASK_AUTO_RETRY_ATTEMPTS = 0 COMMENT = 'pl_monitor_slo' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_SLO_CHECKS('op=slo fail_on_breach=true systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_monitor";
+USE SCHEMA "pipeline_monitor";
+CREATE OR REPLACE TASK "pl_monitor_slo" WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 30 5 * * * UTC' TASK_AUTO_RETRY_ATTEMPTS = 0 COMMENT = 'pl_monitor_slo' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_slo_checks"('op=slo fail_on_breach=true systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');

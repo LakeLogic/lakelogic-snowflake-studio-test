@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_ADMIN;
-USE SCHEMA PIPELINE_ADMIN;
-CREATE OR REPLACE TASK PL_ADMIN_MAINTENANCE WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 0 2 * * 0 UTC' COMMENT = 'pl_admin_maintenance' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_MAINTENANCE_OPTIMIZE('op=maintenance systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_admin";
+USE SCHEMA "pipeline_admin";
+CREATE OR REPLACE TASK "pl_admin_maintenance" WAREHOUSE = {{WH}} SCHEDULE = 'USING CRON 0 2 * * 0 UTC' COMMENT = 'pl_admin_maintenance' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_maintenance_optimize"('op=maintenance systems=marketing/google_ads,marketing/google_analytics,marketing/hubspot,marketing/meta_ads,marketplace/rideflow,operations/checkr,operations/twilio,operations/zendesk,payments/stripe,reference/internal db={{DB}}');

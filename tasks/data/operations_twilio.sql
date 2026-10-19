@@ -3,6 +3,6 @@
 -- {{DB}}/{{WH}}/{{POOL}}/{{REPO}}/{{BRANCH}} are filled by deploy/deploy_project.py or
 -- EXECUTE IMMEDIATE FROM ... USING (...).
 USE DATABASE {{DB}};
-CREATE SCHEMA IF NOT EXISTS PIPELINE_DATA;
-USE SCHEMA PIPELINE_DATA;
-CREATE OR REPLACE TASK PL_DATA_OPERATIONS_TWILIO WAREHOUSE = {{WH}} COMMENT = 'pl_data_operations_twilio' AS EXECUTE NOTEBOOK {{DB}}.PIPELINE.NB_PIPELINE_DRIVER('domain=operations system=twilio layer=all db={{DB}}');
+CREATE SCHEMA IF NOT EXISTS "pipeline_data";
+USE SCHEMA "pipeline_data";
+CREATE OR REPLACE TASK "pl_data_operations_twilio" WAREHOUSE = {{WH}} COMMENT = 'pl_data_operations_twilio' AS EXECUTE NOTEBOOK {{DB}}."pipeline"."nb_pipeline_driver"('domain=operations system=twilio layer=all db={{DB}}');
